@@ -2,6 +2,8 @@
 
 (add description of the game)
 
+For the english words which can be formed, we took reference from repository [https://github.com/dwyl/english-words](https://github.com/dwyl/english-words), specifically from the file [words_alpha.txt](https://github.com/dwyl/english-words/blob/master/words_alpha.txt).
+
 ### How to Run
 1. Make sure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
 2. Open a terminal and navigate to the project directory:
