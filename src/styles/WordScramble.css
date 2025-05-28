@@ -37,6 +37,33 @@
   color: #4f46e5;
 }
 
+.letter-box {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0.2rem;
+  border: 2px solid #d28b62;
+  border-radius: 0.2rem;
+  background-color: rgb(253, 201, 129);
+  color: #2b201a;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 2.5rem;
+  font-family: monospace;
+}
+
+.scrambled-display .letter-box:hover {
+  background-color: #eea43c;
+  transform: scale(1.1);
+}
+
+.clue-label {
+  margin-bottom: 0.5rem;
+}
+
+
 .btn-generate,
 .btn-submit,
 .btn-clue {
@@ -121,3 +148,34 @@
   color: #374151;
   list-style: disc inside;
 }
+
+.guess-input-box {
+  outline: none;
+  background-color: none;
+  margin-bottom: 1rem;
+  cursor: text;
+}
+
+.guess-label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 2.5rem;
+  background-color: #2b201a;
+  margin-left: 0.2rem;
+  animation: blink 1s steps(2, start) infinite;
+  vertical-align: bottom;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
