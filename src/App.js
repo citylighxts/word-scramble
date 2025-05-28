@@ -1,5 +1,5 @@
 import React from 'react';
-import WordScramble from './components/testing';
+import WordScramble from './components/WordScramble';
 
 function App() {
   return (

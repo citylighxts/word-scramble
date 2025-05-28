@@ -1,0 +1,123 @@
+/* WordScramble.css */
+.word-game-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+
+.word-game-card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 28rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.game-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1d4ed8;
+  margin-bottom: 1rem;
+}
+
+.scrambled-display {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #1e293b;
+}
+
+.scrambled-letters {
+  font-family: monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.2rem;
+  color: #4f46e5;
+}
+
+.btn-generate,
+.btn-submit,
+.btn-clue {
+  width: 100%;
+  padding: 0.5rem;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.btn-generate {
+  background-color: #2563eb;
+}
+
+.btn-generate:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-submit {
+  background-color: #16a34a;
+}
+
+.btn-submit:hover {
+  background-color: #15803d;
+}
+
+.btn-clue {
+  background-color: #f59e0b;
+}
+
+.btn-clue:hover {
+  background-color: #d97706;
+}
+
+.guess-input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  margin-bottom: 0.5rem;
+}
+
+.hint-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.hint-list {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+}
+
+.feedback {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #334155;
+  margin-top: 0.5rem;
+}
+
+.clue-word {
+  font-family: monospace;
+  color: #be185d;
+}
+
+.guessed-section {
+  margin-top: 1rem;
+}
+
+.guessed-title {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.guessed-list {
+  font-size: 0.875rem;
+  color: #374151;
+  list-style: disc inside;
+}
