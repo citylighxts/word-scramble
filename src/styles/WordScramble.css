@@ -2,6 +2,7 @@
 
 button {
   font-size: 0.875rem;
+  font-family: "Poppins";
 }
 
 .word-game-container {
@@ -37,7 +38,9 @@ button {
 }
 
 .letter-box {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
   margin: 0.2rem;
@@ -47,11 +50,14 @@ button {
   color: #4b382f;
   font-size: 1.5rem;
   font-weight: bold;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 2.5rem;
   font-family: monospace;
+  text-align: center;
+  box-sizing: border-box;
+  cursor: default;
+  padding: 0;
+  transition: all 0.2s ease;
 }
+
 
 .scrambled-display .letter-box{
   margin-bottom: 1rem;
@@ -60,7 +66,7 @@ button {
 
 .scrambled-display .letter-box:hover {
   background-color: #eda541;
-  transform: scale(1.1);
+  transform: translateY(-1.2px);
 }
 
 .clue-box .letter-box {
@@ -81,6 +87,7 @@ button {
   border-radius: 10rem;
   cursor: pointer;
   margin-bottom: 1rem;
+  transition: all 0.2s ease;
 }
 
 .btn-start {
@@ -93,7 +100,7 @@ button {
 
 .btn-start:hover, .btn-generate:hover {
   background-color: #1d4ed8;
-  transform: scale(1.02);
+  transform: translateY(-1.2px);
 }
 
 .btn-submit {
@@ -102,7 +109,7 @@ button {
 
 .btn-submit:hover {
   background-color: #23ab77;
-  transform: scale(1.02);
+  transform: translateY(-1.2px);
 }
 
 .btn-clue {
@@ -112,7 +119,7 @@ button {
 
 .btn-clue:hover {
   background-color: #f19d00;
-  transform: scale(1.02);
+  transform: translateY(-1.2px);
 }
 
 
@@ -124,10 +131,6 @@ button {
 
 .hint-list {
   font-size: 1rem;
-  color: #4b5563;
-}
-
-p {
   color: #4b5563;
 }
 
@@ -195,9 +198,6 @@ p {
   }
 }
 
-/* Tambahkan ke file WordScramble.css */
-
-/* Kontrol input buttons */
 .input-controls {
   display: flex;
   gap: 10px;
@@ -216,19 +216,16 @@ p {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-width: 100px;
 }
 
 .btn-control:hover:not(:disabled) {
-  background: linear-gradient(145deg, #e0e0e0, #d0d0d0);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: rgb(129, 129, 129);
+  transform: translateY(-1.2px);
 }
 
 .btn-control:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-control:disabled {
@@ -238,27 +235,21 @@ p {
   color: #999;
 }
 
-.btn-backspace {
-  border-color: #ff6b6b;
-  background: linear-gradient(145deg, #ffe0e0, #ffd0d0);
-  color: #cc0000;
+.btn-backspace, .btn-clear {
+  background:rgb(170, 170, 170);
+  color: white;
+  border-radius: 10rem;
+  border: 2px solid #555555;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  margin-top: 0.7rem;
 }
 
-.btn-backspace:hover:not(:disabled) {
-  background: linear-gradient(145deg, #ffd0d0, #ffc0c0);
+.btn-backspace:hover:not(:disabled) .btn-clear:hover:not(:disabled){
+  background-color:rgb(104, 104, 104);
+  transform: translateY(-1.2px);
 }
 
-.btn-clear {
-  border-color: #ffa500;
-  background: linear-gradient(145deg, #fff0e0, #ffe0d0);
-  color: #cc6600;
-}
-
-.btn-clear:hover:not(:disabled) {
-  background: linear-gradient(145deg, #ffe0d0, #ffd0c0);
-}
-
-/* Mobile responsive untuk tombol kontrol */
 @media (max-width: 768px) {
   .input-controls {
     gap: 8px;
@@ -285,7 +276,6 @@ p {
   }
 }
 
-/* Perbaikan untuk mobile keyboard */
 .guess-input-box {
   cursor: text;
   user-select: none;
@@ -293,7 +283,6 @@ p {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Tambahan untuk memastikan keyboard muncul di mobile */
 @media (max-width: 768px) {
   .guess-input-box {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
@@ -306,19 +295,34 @@ p {
   }
 }
 
-/* Animasi untuk tombol yang disabled */
 .btn-control:disabled {
   animation: none !important;
   transform: none !important;
 }
 
-/* Feedback visual saat tombol ditekan */
 .btn-control:not(:disabled):active {
-  animation: buttonPress 0.1s ease;
+  animation: buttonPressControl 0.2s ease;
 }
 
-@keyframes buttonPress {
+.btn-start:active,
+.btn-generate:active,
+.btn-submit:active,
+.btn-clue:active {
+  animation: buttonPressMain 0.2s ease;
+}
+
+.letter-box:active{
+  animation: buttonPressControl 0.2s ease;
+}
+
+@keyframes buttonPressMain {
   0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
+  50% { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+@keyframes buttonPressControl {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
   100% { transform: scale(1); }
 }

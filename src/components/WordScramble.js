@@ -307,7 +307,7 @@ const WordScramble = () => {
               </div>
             )}
 
-            {hasSubmittedOnce && (
+            {guessedWords.length > 0 && (
               <div className="progress-tracker">
                 {guessedWords.length} of {validWords.length} words found
               </div>
