@@ -143,7 +143,6 @@ const WordScramble = () => {
   const getAClue = () => {
   const remaining = validWords.filter(w => !guessedWords.includes(w));
 
-  // Sudah semua kata ditebak
   if (remaining.length === 0) {
     setRevealedClue('');
     setClueWord('');
@@ -152,13 +151,11 @@ const WordScramble = () => {
     return;
   }
 
-  // Hanya tersisa 1 kata dan sudah pernah dijadikan clue
   if (remaining.length === 1 && clueWord === remaining[0]) {
     setClueMessage('There is no other clue.');
     return;
   }
 
-  // Ambil kata berikutnya yang belum jadi clue
   const nextIndex = clueWordIndex % remaining.length;
   const word = remaining[nextIndex];
   setClueWord(word);

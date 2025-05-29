@@ -7,6 +7,7 @@ body {
 
 button {
   font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
 }
 
 .word-game-container {
@@ -29,7 +30,7 @@ button {
 
 .game-title {
   text-align: center;
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: bold;
   color: #1d4ed8;
   margin-bottom: 1.5rem;
@@ -81,7 +82,7 @@ button {
   width: 100%;
   padding: 0.5rem;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
   border: 2px solid #555555;
   border-radius: 10rem;
   cursor: pointer;
@@ -158,7 +159,6 @@ button {
 
 .guessed-title {
   font-weight: 600;
-  font-size: 0.875rem;
   margin-bottom: 0;
 }
 
@@ -187,7 +187,7 @@ button {
   background-color: #1f2937;
   animation: blink 1s steps(2, start) infinite;
   vertical-align: bottom;
-  margin: 0.2rem;
+  margin-top: 0.5rem ;
 }
 
 @keyframes blink {
