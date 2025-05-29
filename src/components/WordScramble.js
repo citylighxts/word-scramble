@@ -1,5 +1,6 @@
+
 // src/components/WordScramble.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Trie } from './Trie';
 import { shuffleString, generateRandomLetters } from './utils';
 import '../styles/WordScramble.css';
@@ -12,61 +13,57 @@ const WordScramble = () => {
   const [feedback, setFeedback] = useState('');
   const [validWords, setValidWords] = useState([]);
   const [guessedWords, setGuessedWords] = useState([]);
+  const [hasSubmittedOnce, setHasSubmittedOnce] = useState(false);
   const [hints, setHints] = useState({});
   const [revealedClue, setRevealedClue] = useState('');
   const [clueWordIndex, setClueWordIndex] = useState(0);
   const [clueWord, setClueWord] = useState('');
+  const [clueMessage, setClueMessage] = useState('');
   const [gameStarted, setGameStarted] = useState(false);
+  const inputRef = useRef(null);
 
-
-  // Ambil kamus kata dan bangun Trie
   useEffect(() => {
     fetch('/words_alpha.txt')
       .then(response => response.text())
       .then(text => {
-        const words = text
-          .split('\n')
-          .map(word => word.trim())
-          .filter(word => word.length >= 2);
+        const words = text.split('\n').map(w => w.trim()).filter(w => w.length >= 2);
         const newTrie = new Trie();
         words.forEach(word => newTrie.insert(word));
-        setTrie(newTrie);
         setDictionary(words);
-      })
-      .catch(error => {
-        console.error('Failed to load dictionary:', error);
+        setTrie(newTrie);
       });
   }, []);
 
-  // Tambahkan warning sebelum halaman di-refresh
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
+    window.addEventListener('beforeunload', e => {
       e.preventDefault();
       e.returnValue = '';
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    });
   }, []);
+
+  useEffect(() => {
+    if (gameStarted && inputRef.current) inputRef.current.focus();
+    const focusHandler = () => inputRef.current?.focus();
+    window.addEventListener('click', focusHandler);
+    return () => window.removeEventListener('click', focusHandler);
+  }, [gameStarted]);
 
   const generateNewRound = () => {
     if (!dictionary.length || !trie) return;
 
-    let attempts = 0;
     let foundWords = [];
-
-    while (attempts < 10) {
-      const randomLetters = generateRandomLetters(8);
-      const shuffled = shuffleString(randomLetters);
+    for (let attempts = 0; attempts < 10; attempts++) {
+      const letters = shuffleString(generateRandomLetters(8));
       const found = new Set();
 
       const dfs = (path, used) => {
         const word = path.join('');
         if (!trie.isPrefix(word)) return;
         if (trie.isWord(word) && word.length >= 4) found.add(word);
-        for (let i = 0; i < shuffled.length; i++) {
+        for (let i = 0; i < letters.length; i++) {
           if (!used[i]) {
             used[i] = true;
-            path.push(shuffled[i]);
+            path.push(letters[i]);
             dfs(path, used);
             path.pop();
             used[i] = false;
@@ -74,49 +71,68 @@ const WordScramble = () => {
         }
       };
 
-      dfs([], Array(shuffled.length).fill(false));
+      dfs([], Array(letters.length).fill(false));
       foundWords = Array.from(found).sort();
 
       if (foundWords.length > 0) {
-        setLetters(shuffled);
+        setLetters(letters);
         setValidWords(foundWords);
         setGuessedWords([]);
         setGuess('');
         setFeedback('');
         setClueWord('');
         setRevealedClue('');
+        setClueMessage('');
         setClueWordIndex(0);
-
-        const hintObj = {};
-        foundWords.forEach(word => {
-          const len = word.length;
-          hintObj[len] = (hintObj[len] || 0) + 1;
+        setHasSubmittedOnce(false);
+        const hints = {};
+        foundWords.forEach(w => {
+          const len = w.length;
+          hints[len] = (hints[len] || 0) + 1;
         });
-        setHints(hintObj);
-        break;
+        setHints(hints);
+        return;
       }
-      attempts++;
     }
 
-    if (foundWords.length === 0) {
-      setLetters('________');
-      setValidWords([]);
-      setGuessedWords([]);
-      setFeedback('No valid words found. Please try again.');
-      setHints({});
-      setClueWord('');
-      setRevealedClue('');
-    }
+    setLetters('________');
+    setValidWords([]);
+    setGuessedWords([]);
+    setFeedback('No valid words found. Please try again.');
+    setHints({});
+    setClueWord('');
+    setRevealedClue('');
+    setClueMessage('');
   };
 
   const handleGuess = () => {
-    const normalized = guess.toLowerCase();
-    if (validWords.includes(normalized)) {
-      if (guessedWords.includes(normalized)) {
+    if (!hasSubmittedOnce) setHasSubmittedOnce(true);
+
+    if (guessedWords.length === validWords.length) {
+      setFeedback('🎉 You’ve guessed all the words!');
+      setGuess('');
+      return;
+    }
+
+    const word = guess.toLowerCase();
+    if (word.length < 4) {
+      setFeedback('⚠️ Your word is too short!');
+    } else if (validWords.includes(word)) {
+      if (guessedWords.includes(word)) {
         setFeedback('⚠️ You’ve already guessed this word!');
       } else {
-        setGuessedWords([...guessedWords, normalized]);
-        setFeedback('🎉 Correct!');
+        const updatedGuessedWords = [...guessedWords, word]; 
+        setGuessedWords(updatedGuessedWords);
+        setFeedback('✅ Correct!');
+        if (word === clueWord) {
+          setRevealedClue(word);
+          setClueWord('');
+        }
+        setClueMessage('');
+
+        if (updatedGuessedWords.length === validWords.length) {
+          setFeedback('🎉 You’ve guessed all the words!');
+        }
       }
     } else {
       setFeedback('❌ Not quite. Try again!');
@@ -124,33 +140,35 @@ const WordScramble = () => {
     setGuess('');
   };
 
-
   const getAClue = () => {
-    const remaining = validWords.filter(w => !guessedWords.includes(w));
-    if (remaining.length === 0) {
-      setFeedback('🎉 You’ve guessed all the words!');
-      setRevealedClue(''); 
-      return;
-    }
+  const remaining = validWords.filter(w => !guessedWords.includes(w));
 
-    if (remaining.length === 1 && clueWordIndex > 0) {
-      setFeedback('There is no other clue.');
-      return;
-    }
+  // Sudah semua kata ditebak
+  if (remaining.length === 0) {
+    setRevealedClue('');
+    setClueWord('');
+    setClueMessage('There are no more clues available.');
+    setFeedback('🎉 You’ve guessed all the words!');
+    return;
+  }
 
-    const idx = clueWordIndex % remaining.length;
-    const word = remaining[idx];
-    setClueWord(word);
+  // Hanya tersisa 1 kata dan sudah pernah dijadikan clue
+  if (remaining.length === 1 && clueWord === remaining[0]) {
+    setClueMessage('There is no other clue.');
+    return;
+  }
 
-    if (word.length <= 2) {
-      setRevealedClue(word);
-    } else {
-      setRevealedClue(word[0] + '_'.repeat(word.length - 2) + word[word.length - 1]);
-    }
-
-    setClueWordIndex(prev => prev + 1);
-    setFeedback('');
-  };
+  // Ambil kata berikutnya yang belum jadi clue
+  const nextIndex = clueWordIndex % remaining.length;
+  const word = remaining[nextIndex];
+  setClueWord(word);
+  setRevealedClue(
+    word.length <= 2 ? word : word[0] + '_'.repeat(word.length - 2) + word[word.length - 1]
+  );
+  setClueWordIndex(clueWordIndex + 1);
+  setClueMessage('');
+  setFeedback('');
+};
 
 
   return (
@@ -159,36 +177,35 @@ const WordScramble = () => {
         {!gameStarted ? (
           <>
             <h1 className="game-title">🎮 Welcome to Word Scramble!</h1>
-            <button onClick={() => {
-              setGameStarted(true);
-              generateNewRound();
-            }} className="btn-generate">
-              ▶️ Start
-            </button>
+            <button onClick={() => { setGameStarted(true); generateNewRound(); }} className="btn-start">▶️ Start</button>
           </>
         ) : (
           <>
             <h1 className="game-title">🧩 Word Scramble</h1>
-
             <div className="scrambled-display">
               <p>Scrambled Letters:</p>
               <div className="scrambled-letters">
-                {(letters || '________').split('').map((char, idx) => (
-                  <button
-                    key={idx}
-                    className="letter-box"
-                    onClick={() => setGuess(prev => prev + char)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {char}
-                  </button>
+                {letters.split('').map((char, i) => (
+                  <button key={i} className="letter-box" onClick={() => setGuess(prev => prev + char)}>{char}</button>
                 ))}
               </div>
             </div>
+            <button onClick={generateNewRound} className="btn-generate">🔁 Generate New Round</button>
+            <button onClick={getAClue} className="btn-clue">💡 {clueWordIndex > 0 ? 'Get Another Clue' : 'Get A Clue'}</button>
 
-            <button onClick={generateNewRound} className="btn-generate">
-              🔁 Generate New Round
-            </button>
+            {(revealedClue || clueMessage) && (
+              <div className="clue-box">
+                {revealedClue && (
+                  <>
+                    <div className="clue-label">Clue:</div>
+                    <div className="scrambled-letters">
+                      {revealedClue.split('').map((c, i) => <span key={i} className="letter-box">{c}</span>)}
+                    </div>
+                </>
+            )}
+                {clueMessage && <div className="feedback">{clueMessage}</div>}
+              </div>
+            )}
 
             {validWords.length > 0 && (
               <div className="game-input-section">
@@ -199,56 +216,33 @@ const WordScramble = () => {
                   ))}
                 </ul>
 
-                <div
-                  className="guess-input-box"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleGuess();
-                    } else if (/^[a-zA-Z]$/.test(e.key)) {
-                      setGuess(prev => prev + e.key.toLowerCase());
-                    } else if (e.key === 'Backspace') {
-                      setGuess(prev => prev.slice(0, -1));
-                    }
-                  }}
-                >
-                  <span className="guess-label">Your guess:</span>
+                <div className="guess-input-box" ref={inputRef} tabIndex={0} onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleGuess();
+                  else if (/^[a-zA-Z]$/.test(e.key)) setGuess(prev => prev + e.key.toLowerCase());
+                  else if (e.key === 'Backspace') setGuess(prev => prev.slice(0, -1));
+                }}>
+                  <span className="guess-label">❓Your Guess:</span>
                   <div className="scrambled-letters">
-                    {guess.split('').map((char, idx) => (
-                      <span key={idx} className="letter-box">{char}</span>
-                    ))}
+                    {guess.split('').map((c, i) => <span key={i} className="letter-box">{c}</span>)}
                     <span className="blinking-cursor" />
                   </div>
                 </div>
 
-                <button onClick={handleGuess} className="btn-submit">
-                  ✅ Submit
-                </button>
-
-                <button onClick={getAClue} className="btn-clue">
-                  💡 {clueWord ? 'Get Another Clue' : 'Get a Clue'}
-                </button>
-
+                <button onClick={handleGuess} className="btn-submit">✅ Submit</button>
                 {feedback && <div className="feedback">{feedback}</div>}
-                {revealedClue && (
-                  <div className="feedback">
-                    <div className="clue-label">Clue:</div>
-                    <div className="scrambled-letters">
-                      {revealedClue.split('').map((char, idx) => (
-                        <span key={idx} className="letter-box">{char}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              </div>
+            )}
+
+            {hasSubmittedOnce && (
+              <div className="progress-tracker">
+                {guessedWords.length} of {validWords.length} words found
               </div>
             )}
 
             {guessedWords.length > 0 && (
               <div className="guessed-section">
-                <p className="guessed-title">✅ Your Found Words:</p>
-                <ul className="guessed-list">
-                  {guessedWords.map((word, index) => <li key={index}>{word}</li>)}
-                </ul>
+                <p className="guessed-title">📋 Your Found Words:</p>
+                <ul className="guessed-list">{guessedWords.map((w, i) => <li key={i}>{w}</li>)}</ul>
               </div>
             )}
           </>
