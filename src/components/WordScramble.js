@@ -1,4 +1,3 @@
-
 // src/components/WordScramble.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Trie } from './Trie';
@@ -42,10 +41,34 @@ const WordScramble = () => {
   }, []);
 
   useEffect(() => {
-    if (gameStarted && inputRef.current) inputRef.current.focus();
-    const focusHandler = () => inputRef.current?.focus();
+    if (gameStarted && inputRef.current) {
+      inputRef.current.focus();
+      // Untuk mobile, set inputmode dan tambahkan event listener touch
+      if ('ontouchstart' in window) {
+        inputRef.current.setAttribute('inputmode', 'text');
+        inputRef.current.setAttribute('autocomplete', 'off');
+        inputRef.current.setAttribute('autocorrect', 'off');
+        inputRef.current.setAttribute('spellcheck', 'false');
+      }
+    }
+    
+    const focusHandler = () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        // Untuk mobile, trigger keyboard
+        if ('ontouchstart' in window) {
+          inputRef.current.click();
+        }
+      }
+    };
+    
     window.addEventListener('click', focusHandler);
-    return () => window.removeEventListener('click', focusHandler);
+    window.addEventListener('touchstart', focusHandler);
+    
+    return () => {
+      window.removeEventListener('click', focusHandler);
+      window.removeEventListener('touchstart', focusHandler);
+    };
   }, [gameStarted]);
 
   const generateNewRound = () => {
@@ -109,7 +132,7 @@ const WordScramble = () => {
     if (!hasSubmittedOnce) setHasSubmittedOnce(true);
 
     if (guessedWords.length === validWords.length) {
-      setFeedback('🎉 You’ve guessed all the words!');
+      setFeedback("🎉 You've guessed all the words!");
       setGuess('');
       return;
     }
@@ -119,7 +142,7 @@ const WordScramble = () => {
       setFeedback('⚠️ Your word is too short!');
     } else if (validWords.includes(word)) {
       if (guessedWords.includes(word)) {
-        setFeedback('⚠️ You’ve already guessed this word!');
+        setFeedback("⚠️ You've already guessed this word!");
       } else {
         const updatedGuessedWords = [...guessedWords, word]; 
         setGuessedWords(updatedGuessedWords);
@@ -131,7 +154,7 @@ const WordScramble = () => {
         setClueMessage('');
 
         if (updatedGuessedWords.length === validWords.length) {
-          setFeedback('🎉 You’ve guessed all the words!');
+          setFeedback("🎉 You've guessed all the words!");
         }
       }
     } else {
@@ -141,32 +164,56 @@ const WordScramble = () => {
   };
 
   const getAClue = () => {
-  const remaining = validWords.filter(w => !guessedWords.includes(w));
+    const remaining = validWords.filter(w => !guessedWords.includes(w));
 
-  if (remaining.length === 0) {
-    setRevealedClue('');
-    setClueWord('');
-    setClueMessage('There are no more clues available.');
-    setFeedback('🎉 You’ve guessed all the words!');
-    return;
-  }
+    if (remaining.length === 0) {
+      setRevealedClue('');
+      setClueWord('');
+      setClueMessage('There are no more clues available.');
+      setFeedback("🎉 You've guessed all the words!");
+      return;
+    }
 
-  if (remaining.length === 1 && clueWord === remaining[0]) {
-    setClueMessage('There is no other clue.');
-    return;
-  }
+    if (remaining.length === 1 && clueWord === remaining[0]) {
+      setClueMessage('There is no other clue.');
+      return;
+    }
 
-  const nextIndex = clueWordIndex % remaining.length;
-  const word = remaining[nextIndex];
-  setClueWord(word);
-  setRevealedClue(
-    word.length <= 2 ? word : word[0] + '_'.repeat(word.length - 2) + word[word.length - 1]
-  );
-  setClueWordIndex(clueWordIndex + 1);
-  setClueMessage('');
-  setFeedback('');
-};
+    const nextIndex = clueWordIndex % remaining.length;
+    const word = remaining[nextIndex];
+    setClueWord(word);
+    setRevealedClue(
+      word.length <= 2 ? word : word[0] + '_'.repeat(word.length - 2) + word[word.length - 1]
+    );
+    setClueWordIndex(clueWordIndex + 1);
+    setClueMessage('');
+    setFeedback('');
+  };
 
+  // Fungsi untuk backspace
+  const handleBackspace = () => {
+    setGuess(prev => prev.slice(0, -1));
+  };
+
+  // Fungsi untuk clear
+  const handleClear = () => {
+    setGuess('');
+  };
+
+  // Handle keyboard input
+  const handleKeyInput = (e) => {
+    e.preventDefault();
+    
+    if (e.key === 'Enter') {
+      handleGuess();
+    } else if (/^[a-zA-Z]$/.test(e.key)) {
+      setGuess(prev => prev + e.key.toLowerCase());
+    } else if (e.key === 'Backspace') {
+      handleBackspace();
+    } else if (e.key === 'Delete' || e.key === 'Escape') {
+      handleClear();
+    }
+  };
 
   return (
     <div className="word-game-container">
@@ -198,31 +245,61 @@ const WordScramble = () => {
                     <div className="scrambled-letters">
                       {revealedClue.split('').map((c, i) => <span key={i} className="letter-box">{c}</span>)}
                     </div>
-                </>
-            )}
+                  </>
+                )}
                 {clueMessage && <div className="feedback">{clueMessage}</div>}
               </div>
             )}
 
             {validWords.length > 0 && (
               <div className="game-input-section">
-                <p className="hint-title">📌 Hints:</p>
+                <div className="hint-title">📌 Hints:</div>
                 <ul className="hint-list">
                   {Object.entries(hints).sort((a, b) => a[0] - b[0]).map(([len, count]) => (
                     <li key={len}>{len} letters: {count} word{count > 1 ? 's' : ''}</li>
                   ))}
                 </ul>
 
-                <div className="guess-input-box" ref={inputRef} tabIndex={0} onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleGuess();
-                  else if (/^[a-zA-Z]$/.test(e.key)) setGuess(prev => prev + e.key.toLowerCase());
-                  else if (e.key === 'Backspace') setGuess(prev => prev.slice(0, -1));
-                }}>
+                {/* Input tersembunyi untuk mobile keyboard */}
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={guess}
+                  onChange={(e) => setGuess(e.target.value.toLowerCase())}
+                  onKeyDown={handleKeyInput}
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    opacity: 0,
+                    pointerEvents: 'none'
+                  }}
+                  inputMode="text"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+
+                <div className="guess-input-box" 
+                     tabIndex={0} 
+                     onClick={() => inputRef.current?.focus()}
+                     onTouchStart={() => inputRef.current?.focus()}
+                     onKeyDown={handleKeyInput}>
                   <span className="guess-label">❓Your Guess:</span>
+                  <p>Tap the letters to form your guess!</p>
                   <div className="scrambled-letters">
                     {guess.split('').map((c, i) => <span key={i} className="letter-box">{c}</span>)}
                     <span className="blinking-cursor" />
                   </div>
+                </div>
+
+                {/* Tombol kontrol input */}
+                <div className="input-controls">
+                  <button onClick={handleBackspace} className="btn-control btn-backspace" disabled={guess.length === 0}>
+                    ⌫ Backspace
+                  </button>
+                  <button onClick={handleClear} className="btn-control btn-clear" disabled={guess.length === 0}>
+                    🗑️ Clear
+                  </button>
                 </div>
 
                 <button onClick={handleGuess} className="btn-submit">✅ Submit</button>

@@ -124,11 +124,16 @@ button {
 
 .hint-title {
   font-weight: 600;
+  margin-top: 1.5rem;
   margin-bottom: 0;
 }
 
 .hint-list {
-  font-size: 0.875rem;
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+p {
   color: #4b5563;
 }
 
@@ -196,3 +201,130 @@ button {
   }
 }
 
+/* Tambahkan ke file WordScramble.css */
+
+/* Kontrol input buttons */
+.input-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 15px 0;
+  flex-wrap: wrap;
+}
+
+.btn-control {
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #f0f0f0, #e0e0e0);
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 100px;
+}
+
+.btn-control:hover:not(:disabled) {
+  background: linear-gradient(145deg, #e0e0e0, #d0d0d0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-control:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+  color: #999;
+}
+
+.btn-backspace {
+  border-color: #ff6b6b;
+  background: linear-gradient(145deg, #ffe0e0, #ffd0d0);
+  color: #cc0000;
+}
+
+.btn-backspace:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ffd0d0, #ffc0c0);
+}
+
+.btn-clear {
+  border-color: #ffa500;
+  background: linear-gradient(145deg, #fff0e0, #ffe0d0);
+  color: #cc6600;
+}
+
+.btn-clear:hover:not(:disabled) {
+  background: linear-gradient(145deg, #ffe0d0, #ffd0c0);
+}
+
+/* Mobile responsive untuk tombol kontrol */
+@media (max-width: 768px) {
+  .input-controls {
+    gap: 8px;
+    margin: 12px 0;
+  }
+  
+  .btn-control {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .btn-control {
+    width: 80%;
+    min-width: unset;
+  }
+}
+
+/* Perbaikan untuk mobile keyboard */
+.guess-input-box {
+  cursor: text;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tambahan untuk memastikan keyboard muncul di mobile */
+@media (max-width: 768px) {
+  .guess-input-box {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  .guess-input-box:focus,
+  .guess-input-box:active {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+  }
+}
+
+/* Animasi untuk tombol yang disabled */
+.btn-control:disabled {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Feedback visual saat tombol ditekan */
+.btn-control:not(:disabled):active {
+  animation: buttonPress 0.1s ease;
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
