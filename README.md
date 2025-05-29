@@ -12,6 +12,21 @@ We use the Depth-First Search (DFS) algorithm to systematically explore every po
 
 For the english words which can be formed, we took reference from repository [https://github.com/dwyl/english-words](https://github.com/dwyl/english-words), specifically from the file [words_alpha.txt](https://github.com/dwyl/english-words/blob/master/words_alpha.txt).
 
+### Project Preview
+
+-	Home Interface
+  <img width="440" alt="image" src="https://github.com/user-attachments/assets/489e45c9-1612-4a0e-9665-bbc5b9ad0af0" />
+
+-	Main game display
+ <img width="217" alt="image" src="https://github.com/user-attachments/assets/f2f4b310-8843-495c-a929-f8c881e2307c" />
+
+-	Hint display
+ <img width="216" alt="image" src="https://github.com/user-attachments/assets/3d79082c-89c1-4702-98d6-3d4a6dd10440" />
+
+-	Game result
+  <img width="216" alt="image" src="https://github.com/user-attachments/assets/3f1987f4-6389-4db3-9dca-a1e7242ea83f" />
+  <img width="218" alt="image" src="https://github.com/user-attachments/assets/17cb5d71-94df-41cc-af29-1f908578a169" />
+
 ### How to Run
 1. Make sure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
 2. Open a terminal and navigate to the project directory:
