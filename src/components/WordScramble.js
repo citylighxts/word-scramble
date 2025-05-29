@@ -285,7 +285,7 @@ const WordScramble = () => {
                      onTouchStart={() => inputRef.current?.focus()}
                      onKeyDown={handleKeyInput}>
                   <span className="guess-label">❓Your Guess:</span>
-                  <p>Tap the letters to form your guess!</p>
+                  <p>Type or tap the letters to form your guess!</p>
                   <div className="scrambled-letters">
                     {guess.split('').map((c, i) => <span key={i} className="letter-box">{c}</span>)}
                     <span className="blinking-cursor" />
